@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeadlineDeck</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>DeadlineDeck</h1>
+    <p class="sub">Every hackathon you've entered, sorted by what's due next. Times in IST.</p>
+  </header>
+
+  <section id="summary" class="summary" aria-live="polite"></section>
+
+  <form id="add-form" class="add-form" autocomplete="off">
+    <label>Devpost URL
+      <input id="url" type="url" placeholder="https://learn-ai-basics.devpost.com/" required />
+    </label>
+    <label>Name
+      <input id="name" type="text" placeholder="Auto-filled from URL" required />
+    </label>
+    <label>Deadline (IST)
+      <input id="deadline" type="datetime-local" required />
+    </label>
+    <label>Status
+      <select id="status">
+        <option value="not-started">Not started</option>
+        <option value="drafting">Drafting</option>
+        <option value="submitted">Submitted</option>
+      </select>
+    </label>
+    <button type="submit">Add</button>
+  </form>
+  <p id="form-error" class="error" role="alert"></p>
+
+  <main id="list" class="list"></main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
