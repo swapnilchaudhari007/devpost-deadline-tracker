@@ -28,11 +28,24 @@ export function nameFromUrl(url) {
   }
 }
 
+// Only http(s) links are stored, so a pasted "javascript:" URL can never run on click.
+export function safeUrl(url) {
+  try {
+    const u = new URL(String(url).trim());
+    return u.protocol === 'https:' || u.protocol === 'http:' ? u.href : null;
+  } catch {
+    return null;
+  }
+}
+
 // "2026-10-27T02:30" typed as IST -> ISO UTC string
 export function istInputToIso(value) {
   const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value || '');
   if (!m) return null;
   const [, y, mo, d, h, mi] = m.map(Number);
+  // reject impossible dates like 2026-02-31 instead of silently rolling over
+  const check = new Date(Date.UTC(y, mo - 1, d, h, mi));
+  if (check.getUTCMonth() !== mo - 1 || check.getUTCDate() !== d || h > 23 || mi > 59) return null;
   const utcMs = Date.UTC(y, mo - 1, d, h, mi) - IST_OFFSET_MIN * 60000;
   return new Date(utcMs).toISOString();
 }
