@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { nameFromUrl, istInputToIso, formatIst, timeLeft, nextAction, urgency, sortEntries, nextUp } from '../logic.js';
+import { safeUrl, nameFromUrl, istInputToIso, formatIst, timeLeft, nextAction, urgency, sortEntries, nextUp } from '../logic.js';
 
 const NOW = Date.parse('2026-10-12T06:30:00Z'); // 12 Oct 2026, 12:00 IST
 const hrs = (h) => new Date(NOW + h * 3600e3).toISOString();
@@ -15,6 +15,14 @@ test('IST input converts to UTC and back', () => {
   assert.equal(iso, '2026-10-26T21:00:00.000Z');
   assert.equal(formatIst(iso), '27 Oct 2026, 02:30 IST');
   assert.equal(istInputToIso(''), null);
+  assert.equal(istInputToIso('2026-02-31T10:00'), null);
+  assert.equal(istInputToIso('2026-10-27T25:00'), null);
+});
+
+test('safeUrl keeps http(s) and drops script URLs', () => {
+  assert.equal(safeUrl(' https://learn-ai-basics.devpost.com/ '), 'https://learn-ai-basics.devpost.com/');
+  assert.equal(safeUrl('javascript:alert(1)'), null);
+  assert.equal(safeUrl('not a url'), null);
 });
 
 test('timeLeft, nextAction, urgency', () => {
