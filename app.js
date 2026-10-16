@@ -1,5 +1,5 @@
 import {
-  STATUSES, nameFromUrl, istInputToIso, formatIst, timeLeft, nextAction, urgency, sortEntries, nextUp,
+  STATUSES, safeUrl, nameFromUrl, istInputToIso, formatIst, timeLeft, nextAction, urgency, sortEntries, nextUp,
 } from './logic.js';
 
 const KEY = 'deadlinedeck.v1';
@@ -41,7 +41,7 @@ function render() {
   for (const e of sortEntries(entries, now)) {
     const card = el('article', { class: `card ${urgency(e, now)}`, 'data-id': e.id });
     const top = el('div', { class: 'card-top' });
-    const a = el('a', { href: e.url, target: '_blank', rel: 'noopener' }, e.name);
+    const a = el('a', { href: safeUrl(e.url) || '#', target: '_blank', rel: 'noopener' }, e.name);
     const del = el('button', { class: 'del', 'aria-label': `Delete ${e.name}`, title: 'Delete' }, '✕');
     del.onclick = () => {
       if (confirm(`Remove ${e.name}?`)) { entries = entries.filter((x) => x.id !== e.id); save(); render(); }
@@ -73,11 +73,11 @@ $('name').addEventListener('input', () => { nameTouched = $('name').value.trim()
 
 $('add-form').addEventListener('submit', (ev) => {
   ev.preventDefault();
-  const url = $('url').value.trim();
+  const url = safeUrl($('url').value);
   const name = $('name').value.trim() || nameFromUrl(url);
   const deadline = istInputToIso($('deadline').value);
   if (!url || !name || !deadline) {
-    $('form-error').textContent = 'Add a URL, a name and a deadline.';
+    $('form-error').textContent = 'Add a valid http(s) URL, a name and a real deadline.';
     return;
   }
   $('form-error').textContent = '';
